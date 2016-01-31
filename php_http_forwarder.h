@@ -12,7 +12,7 @@
   | obtain it through the world-wide-web, please send a note to          |
   | license@php.net so we can mail you a copy immediately.               |
   +----------------------------------------------------------------------+
-  | Author:                                                              |
+  | Author: andhm@126.com                                                |
   +----------------------------------------------------------------------+
 */
 
@@ -26,7 +26,7 @@
 extern zend_module_entry http_forwarder_module_entry;
 #define phpext_http_forwarder_ptr &http_forwarder_module_entry
 
-#define PHP_HTTP_FORWARDER_VERSION "0.1.0" /* Replace with version number for your extension */
+#define PHP_HTTP_FORWARDER_VERSION "0.1.0"
 
 #ifdef PHP_WIN32
 #	define PHP_HTTP_FORWARDER_API __declspec(dllexport)
