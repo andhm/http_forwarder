@@ -121,11 +121,25 @@ array (size=2)
 
 **4. 当前企业获取消息数的方式**
 
-    SELECT COUNT(t_chat_message.MSG_ID) FROM t_chat_message LEFT JOIN t_chat_friend ON (t_chat_message.F_ID=t_chat_friend.F_ID AND t_chat_message.MSG_ID>t_chat_friend.CORP_UNREAD_ID AND t_chat_friend.CORP_UNREAD_ID>0) WHERE t_chat_message.ACCOUNT_ID=63719 AND t_chat_message.SENDER=1 AND t_chat_friend.DEL_STATUS IN (0,1)
+    
+    SELECT COUNT(t_chat_message.MSG_ID) FROM t_chat_message LEFT JOIN t_chat_friend 
+    ON (t_chat_message.F_ID=t_chat_friend.F_ID AND t_chat_message.MSG_ID>t_chat_friend.CORP_UNREAD_ID 
+    AND t_chat_friend.CORP_UNREAD_ID>0) 
+    WHERE t_chat_message.ACCOUNT_ID=63719 AND t_chat_message.SENDER=1 
+    AND t_chat_friend.DEL_STATUS IN (0,1)
+    
 	
 **5. 当前企业获取好友列表（包括每个好友的未读标记）**
 
-    SELECT t_chat_friend.MSG_LAST_TIME as lastTime, t_user_member.B_REAL_NAME as realName, t_user_member.USER_ID as userID, t_user_member.R_PHOTO as photo, t_user_member.G_JOB_NAME as userJobName, t_chat_friend.JOB_ALIAS_NAME as jobName, t_chat_friend.JOB_ID as jobID, t_chat_friend.CORP_UNREAD_ID, t_chat_friend.USER_UNREAD_ID, t_chat_friend.F_ID, max(t_chat_message.MSG_ID) as msgID FROM t_chat_friend LEFT JOIN t_user_member ON (t_chat_friend.USER_ID=t_user_member.USER_ID) LEFT JOIN t_chat_message ON (t_chat_friend.F_ID=t_chat_message.F_ID and t_chat_message.SENDER = 1) WHERE t_chat_friend.ACCOUNT_ID=63719 AND t_chat_friend.DEL_STATUS IN (0,1) GROUP BY t_chat_friend.F_ID ORDER BY t_chat_friend.MSG_LAST_TIME DESC LIMIT 20
+    
+    SELECT t_chat_friend.MSG_LAST_TIME as lastTime, t_user_member.B_REAL_NAME as realName, 
+    t_user_member.USER_ID as userID, t_user_member.R_PHOTO as photo, t_user_member.G_JOB_NAME as userJobName,
+    t_chat_friend.JOB_ALIAS_NAME as jobName, t_chat_friend.JOB_ID as jobID, t_chat_friend.CORP_UNREAD_ID, 
+    t_chat_friend.USER_UNREAD_ID, t_chat_friend.F_ID, max(t_chat_message.MSG_ID) as msgID 
+    FROM t_chat_friend LEFT JOIN t_user_member ON (t_chat_friend.USER_ID=t_user_member.USER_ID) 
+    LEFT JOIN t_chat_message ON (t_chat_friend.F_ID=t_chat_message.F_ID and t_chat_message.SENDER = 1) 
+    WHERE t_chat_friend.ACCOUNT_ID=63719 AND t_chat_friend.DEL_STATUS IN (0,1) 
+    GROUP BY t_chat_friend.F_ID ORDER BY t_chat_friend.MSG_LAST_TIME DESC LIMIT 20
 
 >提示：目前好友未读只是标记，没有直接数量展示，做法是直接通过 t_chat_friend 表的 CORP_UNREAD_ID>0 判断是否有未读
 
@@ -136,12 +150,20 @@ array (size=2)
 
 > a. 获取企业未读数
     
-	SELECT SUM(t_chat_friend.CORP_UNREAD_CNT) AS TOTAL_UNREAD_CNT FROM t_chat_friend WHERE t_chat_friend.ACCOUNT_ID=63719 AND t_chat_friend.DEL_STATUS IN (0,1)
+	
+	SELECT SUM(t_chat_friend.CORP_UNREAD_CNT) AS TOTAL_UNREAD_CNT FROM t_chat_friend 
+	WHERE t_chat_friend.ACCOUNT_ID=63719 AND t_chat_friend.DEL_STATUS IN (0,1)
 	
 > b. 获取聊天列表里用户的未读数
     
-	SELECT t_chat_friend.CORP_UNREAD_CNT AS UNREAD_CNT FROM t_chat_friend WHERE t_chat_friend.ACCOUNT_ID=63719
+	
+	SELECT t_chat_friend.CORP_UNREAD_CNT AS UNREAD_CNT FROM t_chat_friend 
+	WHERE t_chat_friend.ACCOUNT_ID=63719
 	
 > 提示：方案一 “获取聊天列表里用户的未读数” 获取方式如下，且 t_chat_friend 表里 corp_unread_id 不能再被重置为0 （即已读请零操作）
 
-	SELECT COUNT(t_chat_message.MSG_ID) AS UNREAD_CNT, t_chat_friend.USER_ID FROM t_chat_friend LEFT JOIN t_chat_message ON (t_chat_friend.F_ID=t_chat_message.F_ID AND t_chat_message.SENDER=1) WHERE t_chat_friend.ACCOUNT_ID=63719 AND t_chat_message.MSG_ID>t_chat_friend.CORP_UNREAD_ID AND t_chat_friend.DEL_STATUS IN (0, 1) GROUP BY t_chat_friend.F_ID LIMIT 20;
+	
+	SELECT COUNT(t_chat_message.MSG_ID) AS UNREAD_CNT, t_chat_friend.USER_ID FROM t_chat_friend 
+	LEFT JOIN t_chat_message ON (t_chat_friend.F_ID=t_chat_message.F_ID AND t_chat_message.SENDER=1) 
+	WHERE t_chat_friend.ACCOUNT_ID=63719 AND t_chat_message.MSG_ID>t_chat_friend.CORP_UNREAD_ID 
+	AND t_chat_friend.DEL_STATUS IN (0, 1) GROUP BY t_chat_friend.F_ID LIMIT 20;
